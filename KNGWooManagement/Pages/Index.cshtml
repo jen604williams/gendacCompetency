@@ -2,10 +2,30 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
-    <h2>API Data: Order 1</h2>
-    <p>@Model.Order1</p>
-    <h2>API Data: All Data</h2>
-    <p>@Model.AllOrders</p>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Order Number</th>
+            <th>Buyer Name</th>
+            <th>Price</th>
+            <th>ETA</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model.Orders)
+        {
+            <tr>
+                <td>@order.OrderNumber</td>
+                <td>@order.BuyerName</td>
+                <td>@order.Price.ToString("C")</td>
+                <td>@order.Eta.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@order.OrderStatus.GetDisplayName()</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
 }
 
 <div class="text-center">

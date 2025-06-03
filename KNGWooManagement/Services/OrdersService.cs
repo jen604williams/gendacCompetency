@@ -1,14 +1,44 @@
 
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 public class OrdersService
 {
     private readonly HttpClient _httpClient;
     private readonly string _apiKey;
+  
 
     public OrdersService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
     {
         _httpClient = httpClientFactory.CreateClient("ApiClient");
         _apiKey = configuration["ApiSettings:ApiKey"] ?? "";
     }
+
+    // public Task<List<Item>> GetPageOfOrders(int page)
+    // {
+    //     // if (_allOrders == null)
+    //     // {
+    //     //     //TODO: check about the configure await and whether it is worth adding
+    //     //     try
+    //     //     {
+    //     //         var orders = GetAllOrders().ConfigureAwait(false);
+    //     //         if (orders.ToString().Contains("Error"))
+    //     //         {
+    //     //             return null;
+    //     //         }
+    //     //         _allOrders = JsonSerializer.Deserialize<List<Item>>(orders.ToString());
+    //     //     }
+    //     //     catch (Exception ex)
+    //     //     {
+
+    //     //     }
+    //     // }
+    //     // //page starts at 0
+    //     // int startItem = page * _numberOfItemsOnPage;
+    //     // return (Task<List<Item>?>)_allOrders.Skip(startItem).Take(_numberOfItemsOnPage);
+    //     var orders = GetAllOrders().ToString;
+    //     return orders;
+    // }
 
     public Task<string> GetAllOrders()
     {

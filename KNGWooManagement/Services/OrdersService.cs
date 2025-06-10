@@ -1,4 +1,5 @@
 
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -14,31 +15,11 @@ public class OrdersService
         _apiKey = configuration["ApiSettings:ApiKey"] ?? "";
     }
 
-    // public Task<List<Item>> GetPageOfOrders(int page)
-    // {
-    //     // if (_allOrders == null)
-    //     // {
-    //     //     //TODO: check about the configure await and whether it is worth adding
-    //     //     try
-    //     //     {
-    //     //         var orders = GetAllOrders().ConfigureAwait(false);
-    //     //         if (orders.ToString().Contains("Error"))
-    //     //         {
-    //     //             return null;
-    //     //         }
-    //     //         _allOrders = JsonSerializer.Deserialize<List<Item>>(orders.ToString());
-    //     //     }
-    //     //     catch (Exception ex)
-    //     //     {
-
-    //     //     }
-    //     // }
-    //     // //page starts at 0
-    //     // int startItem = page * _numberOfItemsOnPage;
-    //     // return (Task<List<Item>?>)_allOrders.Skip(startItem).Take(_numberOfItemsOnPage);
-    //     var orders = GetAllOrders().ToString;
-    //     return orders;
-    // }
+    public Task<string> GetPageOfOrders(int pageNumber, int pageSize)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/api/orders?pageNumber={pageNumber}&pageSize={pageSize}");
+        return GetDataAsync(request);
+    }
 
     public Task<string> GetAllOrders()
     {
@@ -70,9 +51,13 @@ public class OrdersService
         return GetDataAsync(request);
     }
 
-        public Task<string> AddOrder()
+        public Task<string> AddOrder(string order)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, "/api/orders/");
+        var content = new StringContent(order, Encoding.UTF8, "application/json");
+        var request = new HttpRequestMessage(HttpMethod.Post, "/api/orders/")
+        {
+            Content = content
+        };
         return GetDataAsync(request);
     }
 

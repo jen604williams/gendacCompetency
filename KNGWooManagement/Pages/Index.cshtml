@@ -1,34 +1,109 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Order Number</th>
-            <th>Buyer Name</th>
-            <th>Price</th>
-            <th>ETA</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var order in Model.Orders)
-        {
-            <tr>
-                <td>@order.OrderNumber</td>
-                <td>@order.BuyerName</td>
-                <td>@order.Price.ToString("C")</td>
-                <td>@order.Eta.ToString("yyyy-MM-dd HH:mm")</td>
-                <td>@order.OrderStatus.GetDisplayName()</td>
-            </tr>
-        }
-    </tbody>
-</table>
-
+    ViewData["Title"] = "Orders Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="logo.png" alt="KNGWOO">
+        </div>
+        <h1>@ViewData["Title"]</h1>
+    </header>
+    <main>
+        <div class="stats">
+            @foreach (var stat in Model.OrderStats)
+            {
+                <div class="stat">
+                    <span class="icon">@stat.Icon</span>
+                    <span class="number">@stat.Count</span>
+                    <span class="label">@stat.Label</span>
+                </div>
+            }
+        </div>
+        
+        <div class="actions">
+            <form method="post">
+                <input type="text" placeholder="Search" asp-for="SearchQuery">
+                <button type="submit" asp-page-handler="Search">Search</button>
+            </form>
+            
+            <button type="button" class="add-order" data-bs-toggle="modal" data-bs-target="#orderModal">+ Order</button>
+            <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="orderModalLabel">Add New Order</h5>
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="post" asp-page-handler="Submit">
+                                <div class="mb-3">
+                                    <label for="buyerName" class="form-label">Buyer Name:</label>
+                                    <input type="text" id="buyerName" class="form-control" asp-for="NewOrder.BuyerName">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="orderPrice" class="form-label">Price:</label>
+                                    <input type="number" id="orderPrice" class="form-control" asp-for="NewOrder.Price">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="etaDate" class="form-label">ETA:</label>
+                                    <input type="date" id="etaDate" class="form-control" asp-for="NewOrder.Eta">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Order</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Order No.</th>
+                    <th>Buyer</th>
+                    <th>Price</th>
+                    <th>ETA</th>
+                    <th>Progress</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Item order in Model.Orders)
+                {
+                    <tr>
+                        <td>
+                            @if (order.Eta < DateTime.Now)
+                            {
+                                <span class="status-late">LATE</span>
+                            }
+                            @order.OrderNumber
+                        </td>
+                        <td>@order.BuyerName</td>
+                        <td>@order.Price.ToString("C")</td>
+                        <td>@order.Eta.ToString("dd MMM yyyy")</td>
+                        <td><span class="@order.OrderStatus">@order.OrderStatus</span></td>
+                        <td>
+                            <button class="edit">✏️</button>
+                            <button class="delete">🗑️</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </main>
+</body>
+</html>
